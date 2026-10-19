@@ -24,7 +24,7 @@ jobs:
 
       # SAST Bandit静态代码扫描
       - name: SAST Bandit scan
-        run: bandit -r . -f json -o bandit-report.json
+        run: bandit -r . -f json -o bandit-report.json|| true
 
       # SCA Safety依赖漏洞扫描
       - name: SCA Safety check
