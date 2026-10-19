@@ -125,10 +125,6 @@ API call method: Visit `http://127.0.0.1:8080` via browser or HTTP client.
 2. Protection against XSS: Escape user-supplied output before rendering in HTML; use Content-Security-Policy to limit untrusted scripts.
 3. Authentication: Use JWT for session management. Passwords are stored with secure password hashing (bcrypt). Raw plaintext passwords are not saved in the database.
 
-## SAST / SCA Reports
-Screenshots from GitHub Actions CI/CD pipeline are attached in this repository.
-Tools used: e.g. Bandit (SAST) + Dependency-check (SCA).
-
 ## Selected Vulnerability: CVE-2018-8715
 Brief description:
 AppWeb before version 7.2.4 contains an authentication bypass vulnerability in its Digest authentication handler. An attacker can craft an HTTP request containing only the username field in the Digest header, without providing valid password proof, and successfully access protected resources.
