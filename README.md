@@ -20,6 +20,8 @@ Request Body(JSON):
     "username":"testuser",
     "password":"123456"
 }
+
+```
 Response: `201 Created`
 {"msg":"register success"}
 
@@ -27,19 +29,24 @@ Response: `201 Created`
 
 User authentication, returns JWT access token.
 Request Body(JSON):
+```json
 {
     "username":"testuser",
     "password":"123456"
 }
+```
 Response: `200 OK`
+```json
 {"token":"<JWT_TOKEN_VALUE>"}
-### . GET /api/data (Lab‑required protected endpoint)
+```
+### 3. GET /api/data (Lab‑required protected endpoint)
 
 Return simulated dataset. **Access restricted only for authenticated users.**
 Request Headers:
 `Authorization: Bearer <JWT_TOKEN_VALUE>`
 
 Response example:
+```json
 {
   "user": "testuser",
   "data": [
@@ -47,6 +54,7 @@ Response example:
     {"id": 2, "info": "public secure data 2"}
   ]
 }
+```
 ### 4. GET /api/whoami (Custom self‑implemented endpoint)
 
 Custom protected endpoint, output current logged‑in user identity info.
@@ -54,10 +62,12 @@ Request Headers:
 `Authorization: Bearer <JWT_TOKEN_VALUE>`
 
 Response example:
+```json
 {
   "login_user_id": "1",
   "login_username": "testuser"
 }
+```
 ## Implemented Security Measures
 
 ### 1. SQL Injection protection
