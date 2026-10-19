@@ -24,11 +24,11 @@ jobs:
 
       # SAST Bandit静态代码扫描
       - name: SAST Bandit scan
-        run: bandit -r . -f json -o bandit-report.json|| true
+        run: bandit -r . -f json -o bandit-report.json || true
 
       # SCA Safety依赖漏洞扫描
       - name: SCA Safety check
-        run: safety check --json > safety-report.json
+        run: safety check --json > safety-report.json || true
 
       - name: Upload scan reports
         uses: actions/upload-artifact@v4
