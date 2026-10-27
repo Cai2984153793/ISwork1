@@ -150,32 +150,5 @@ What changed: The authentication module now fully parses all required Digest fie
 Why it works: It enforces the full Digest authentication specification; a username alone cannot bypass authentication anymore.
 
 ## Proof of Vulnerability Elimination
-After applying the patch, repeat the same attack request with only `Digest username=admin`. The server returns `401 Unauthorized` and blocks access. Screenshots of the failed attack are attached to prove the vulnerability is fixed.
-# Selected Vulnerability: CVE-2021-40438
+After applying the patch, repeat the same attack request with only `Digest username=admin`. The server returns `401 Unauthorized` and blocks access. 
 
-Brief description: Apache HTTP Server before version 2.4.49 contains an SSRF (Server-Side Request Forgery) vulnerability in the mod_proxy module. An attacker can craft a malicious HTTP request with a special `proxy:` URI prefix. The vulnerable Apache server acts as an agent and initiates arbitrary network requests to internal or external targets without sufficient validation, allowing attackers to access protected internal resources and scan internal network services.
-
-## Reproduction Steps (with screenshots)
-
-1. Start the vulnerable Apache service with `docker compose up -d`.
-2. Open Burp Suite, change proxy listener port to `127.0.0.1:8081`, configure browser proxy to `127.0.0.1:8081`.
-3. Enable Burp Intercept, browse `http://127.0.0.1:8080`.
-4. Capture the HTTP request, modify the request URL and add the malicious `proxy:` payload. Example request path: `/?url=proxy:http://127.0.0.1:22`
-5. Forward the request. The Apache server will send a request to the specified target address. The response content and timing can reveal whether the target port is open.
-6. Take screenshots of Burp raw request/response as proof of exploit.
-
-## Root Cause Analysis
-
-The root cause is flawed request parsing logic inside Apache `mod_proxy` module. When handling proxy requests, Apache fails to strictly validate the destination URI. It incorrectly recognizes the custom `proxy:` pseudo-protocol. The server directly uses the attacker-controlled URI as the backend proxy target and initiates outbound requests. The code does not restrict requests to internal network addresses, which leads to Server-Side Request Forgery.
-
-## Applied Fix
-
-Fix: Upgrade Apache HTTP Server to version 2.4.49 or newer. What changed: The `mod_proxy` module adds strict validation rules for proxy target URIs. It rejects unknown pseudo-protocols such as `proxy:`, and adds restrictions to prevent forwarding requests to loopback and internal private network addresses. Why it works: Malicious `proxy:` payloads are blocked before the server sends requests. Attackers can no longer use Apache as a proxy to scan or access internal services.
-
-## Proof of Vulnerability Elimination
-
-After applying the patch, repeat the same attack request with `/?url=proxy:http://127.0.0.1:22`. The server rejects the malicious URI and returns an error response to block SSRF attacks. Screenshots of the failed attack are attached to prove the vulnerability is fixed.
-
-## Environment Deployment Failure Record
-
-When building the container image with `docker compose up -d`, the build process failed while fetching base image `vulhub/httpd:2.4.43`. The error `wsarecv: An existing connection was forcibly closed by the remote host` shows that the TCP connection to `auth.docker.io` was closed remotely. This is a typical network limitation when accessing Docker Hub in mainland China. The Dockerfile syntax is correct, but repeated attempts still cannot download the base image, so the vulnerable environment cannot be started locally. The vulnerability principle, exploit method and mitigation strategy are still fully analyzed.
